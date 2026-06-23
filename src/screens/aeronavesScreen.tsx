@@ -22,7 +22,7 @@ export default function AeronavesScreen() {
   const [types, setTypes] = useState<AeronaveType[]>([]);
   const [selectedType, setSelectedType] = useState<string>("");
   const [query, setQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 500);
   const [results, setResults] = useState<AeronaveSearchItem[]>([]);
   const [selectedAeronave, setSelectedAeronave] = useState<Aeronave | null>(
     null,
@@ -63,11 +63,11 @@ export default function AeronavesScreen() {
 
   useEffect(() => {
     const loadSearchResults = async () => {
-      setDebouncedQuery(useDebounce(query, 500));
       if (!debouncedQuery.trim()) {
         setResults([]);
         return;
       }
+
       try {
         setLoadingSearch(true);
         setError(null);
@@ -86,6 +86,7 @@ export default function AeronavesScreen() {
         setLoadingSearch(false);
       }
     };
+
     loadSearchResults();
   }, [debouncedQuery, selectedType]);
 
@@ -93,6 +94,9 @@ export default function AeronavesScreen() {
     try {
       setLoadingDetails(true);
       setError(null);
+      setQuery("");
+      setResults([]);
+      setSelectedAeronave(null);
 
       const details = await getAeronaveDetails(code);
 
@@ -100,7 +104,6 @@ export default function AeronavesScreen() {
     } catch {
       setError("Failed to load Aeronave details.");
     } finally {
-      setQuery("");
       setLoadingDetails(false);
     }
   }, []);
@@ -108,6 +111,7 @@ export default function AeronavesScreen() {
   return (
     <FlatList
       style={styles.container}
+      contentContainerStyle={styles.contentContainer}
       data={results}
       keyExtractor={(item) => item.matricula}
       keyboardShouldPersistTaps="handled"
@@ -118,44 +122,48 @@ export default function AeronavesScreen() {
           <TextInput
             placeholder="Search Aeronave code..."
             value={query}
-            onChangeText={setQuery}
+            onChangeText={(text) => {
+              setQuery(text);
+              setSelectedAeronave(null);
+            }}
             editable={!loadingTypes}
             autoCapitalize="characters"
             style={styles.input}
           />
 
-          {loadingTypes ? (
-            <ActivityIndicator />
-          ) : (
-            <FlatList
-              horizontal
-              data={types}
-              keyExtractor={(item) => item.id}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.filterList}
-              renderItem={({ item }) => (
-                <Pressable
-                  onPress={() => setSelectedType(item.id)}
-                  style={[
-                    styles.filterChip,
-                    selectedType === item.id
-                      ? styles.filterChipSelected
-                      : undefined,
-                  ]}
-                >
-                  <Text>{item.label}</Text>
-                </Pressable>
-              )}
-            />
-          )}
+          <View style={styles.filtersContainer}>
+            {loadingTypes ? (
+              <ActivityIndicator />
+            ) : (
+              <FlatList
+                horizontal
+                data={types}
+                keyExtractor={(item) => item.id}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.filterList}
+                renderItem={({ item }) => (
+                  <Pressable
+                    onPress={() => setSelectedType(item.id)}
+                    style={[
+                      styles.filterChip,
+                      selectedType === item.id && styles.filterChipSelected,
+                    ]}
+                  >
+                    <Text>{item.label}</Text>
+                  </Pressable>
+                )}
+              />
+            )}
+          </View>
 
           {loadingSearch && <ActivityIndicator style={styles.spacing} />}
 
           {error && <Text style={styles.error}>{error}</Text>}
 
           {!loadingSearch &&
-            debouncedQuery.length > 0 &&
-            results.length === 0 && (
+            query.length > 0 &&
+            results === null &&
+            selectedAeronave == null && (
               <Text style={styles.empty}>No Aeronaves found.</Text>
             )}
 
@@ -197,11 +205,20 @@ export default function AeronavesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    paddingTop: 60,
-    backgroundColor: "blue",
+    backgroundColor: "white",
   },
 
+  contentContainer: {
+    flexGrow: 1,
+    padding: 16,
+    paddingTop: 60,
+    alignItems: "stretch",
+  },
+  filtersContainer: {
+    minHeight: 80,
+    minWidth: 400,
+    justifyContent: "center",
+  },
   title: {
     fontSize: 28,
     fontWeight: "700",
@@ -214,12 +231,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: "yellow",
   },
 
   filterList: {
     maxHeight: 80,
-    backgroundColor: "red",
     paddingVertical: 16,
   },
 
@@ -241,7 +256,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderBottomWidth: 1,
     borderBottomColor: "#EEE",
-    backgroundColor: "green",
   },
 
   code: {
