@@ -4,10 +4,11 @@ export interface AeronaveSearchItem {
 
 export interface Aeronave {
   matricula: string;
-  manufacturer: string;
-  type: string;
-  maxPassengers: number;
-  rangeKm: number;
+  fabricante: string;
+  tipo_veiculo: string;
+  passageiros_maximos: number;
+  houve_ocorrencia: boolean;
+  proprietario: string;
 }
 
 export type AeronaveType = {

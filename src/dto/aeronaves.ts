@@ -1,17 +1,13 @@
 export type AeronaveResponse = {
-  codigo: string;
-  descricao: string;
+  matricula: string;
   fabricante: string;
-  tipo: string;
-  capacidade_passageiros: number;
-  alcance_km: number;
+  tipo_veiculo: string;
+  passageiros_maximos: number;
+  houve_ocorrencia: boolean;
+  proprietario: string;
 };
 
-export type AeronaveSearchResponse = AeronaveSearchItem[];
-
-type AeronaveSearchItem = {
-  codigo: string;
-};
+export type AeronaveSearchResponse = string[];
 
 export type AeronaveTypeResponse = {
   id: string;

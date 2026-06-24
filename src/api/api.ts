@@ -1,9 +1,9 @@
-import { Aeronave, AeronaveSearchItem, AeronaveType } from "@/models/aeronaves";
+import { Aeronave, AeronaveType } from "@/models/aeronaves";
 
-const BASE_URL = "https://your-api.com";
+const BASE_URL = "https://localhost:3333/api";
 
 export async function getAeronaveTypes(): Promise<AeronaveType[]> {
-  const response = await fetch(`${BASE_URL}/Aeronave-types`);
+  const response = await fetch(`${BASE_URL}/aeronave-types`);
 
   if (!response.ok) {
     throw new Error("Failed to load Aeronave types");
@@ -12,29 +12,29 @@ export async function getAeronaveTypes(): Promise<AeronaveType[]> {
   return response.json();
 }
 
-export async function searchAeronaves(
+export async function searchMatriculas(
   query: string,
   type?: string,
-): Promise<AeronaveSearchItem[]> {
+): Promise<string[]> {
   const params = new URLSearchParams();
 
-  params.append("query", query);
-
   if (type) {
-    params.append("type", type);
+    params.append("tipo_de_veiculo", type);
   }
 
-  const response = await fetch(`${BASE_URL}/Aeronaves?${params.toString()}`);
+  params.append("search", query);
+  console.log(`${BASE_URL}/matriculas?${params.toString()}`);
+  const response = await fetch(`${BASE_URL}/matriculas?${params.toString()}`);
 
   if (!response.ok) {
-    throw new Error("Failed to search Aeronaves");
+    throw new Error("Failed to search Matriculas");
   }
 
   return response.json();
 }
 
 export async function getAeronaveDetails(code: string): Promise<Aeronave> {
-  const response = await fetch(`${BASE_URL}/Aeronaves/${code}`);
+  const response = await fetch(`${BASE_URL}/aeronaves/${code}`);
 
   if (!response.ok) {
     throw new Error("Failed to load Aeronave details");

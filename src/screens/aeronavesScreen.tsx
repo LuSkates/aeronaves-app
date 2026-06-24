@@ -5,7 +5,7 @@ import { Aeronave, AeronaveSearchItem, AeronaveType } from "@/models/aeronaves";
 import {
   getAeronaveDetails,
   getAeronaveTypes,
-  searchAeronaves,
+  searchAeronavesMatriculas,
 } from "@/service/apiService";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -72,7 +72,7 @@ export default function AeronavesScreen() {
         setLoadingSearch(true);
         setError(null);
 
-        const response = await searchAeronaves(
+        const response = await searchAeronavesMatriculas(
           debouncedQuery.trim(),
           selectedType,
         );
@@ -80,7 +80,7 @@ export default function AeronavesScreen() {
         setResults(response);
       } catch (err: any) {
         if (err.name !== "AbortError") {
-          setError("Failed to search Aeronaves.");
+          setError("Falha ao pesquisar aeronaves");
         }
       } finally {
         setLoadingSearch(false);
@@ -143,7 +143,7 @@ export default function AeronavesScreen() {
                 contentContainerStyle={styles.filterList}
                 renderItem={({ item }) => (
                   <Pressable
-                    onPress={() => setSelectedType(item.id)}
+                    onPress={() => setSelectedType(item.label)}
                     style={[
                       styles.filterChip,
                       selectedType === item.id && styles.filterChipSelected,
@@ -171,15 +171,21 @@ export default function AeronavesScreen() {
             <View style={styles.detailsCard}>
               <Text style={styles.detailsTitle}>Aeronave Details</Text>
 
-              <Text>Code: {selectedAeronave.matricula}</Text>
+              <Text>Matricula: {selectedAeronave.matricula}</Text>
 
-              <Text>Manufacturer: {selectedAeronave.manufacturer}</Text>
+              <Text>Fabricante: {selectedAeronave.fabricante}</Text>
 
-              <Text>Type: {selectedAeronave.type}</Text>
+              <Text>Tipo: {selectedAeronave.tipo_veiculo}</Text>
 
-              <Text>Max Passengers: {selectedAeronave.maxPassengers}</Text>
+              <Text>
+                Máximo de passageiros: {selectedAeronave.passageiros_maximos}
+              </Text>
 
-              <Text>Range: {selectedAeronave.rangeKm} km</Text>
+              {selectedAeronave.houve_ocorrencia && (
+                <Text style={{ color: "red" }}>
+                  {"Essa aeronave sofreu uma ocorrência"}
+                </Text>
+              )}
             </View>
           )}
 

@@ -15,22 +15,22 @@ import {
   AeronaveSearchItem,
   AeronaveType,
 } from "../models/aeronaves";
+import { searchMatriculas } from "@/api/api";
 
 function mapAeronave(response: AeronaveResponse): Aeronave {
   return {
-    matricula: response.codigo,
-    manufacturer: response.fabricante,
-    type: response.tipo,
-    maxPassengers: response.capacidade_passageiros,
-    rangeKm: response.alcance_km,
+    matricula: response.matricula,
+    fabricante: response.fabricante,
+    tipo_veiculo: response.tipo_veiculo,
+    passageiros_maximos: response.passageiros_maximos,
+    houve_ocorrencia: response.houve_ocorrencia,
+    proprietario: response.proprietario,
   };
 }
 
-function mapAeronaveSearch(
-  response: AeronaveSearchResponse,
-): AeronaveSearchItem[] {
+function mapMatriculas(response: AeronaveSearchResponse): AeronaveSearchItem[] {
   const out = response.map((item) => ({
-    matricula: item.codigo,
+    matricula: item,
   }));
   return out;
 }
@@ -48,11 +48,12 @@ export function getAeronaveTypes(): AeronaveType[] {
   return types;
 }
 
-export function searchAeronaves(
+export async function searchAeronavesMatriculas(
   query: string,
   type?: string,
-): AeronaveSearchItem[] {
-  const searchResults = mapAeronaveSearch(mockAeronaveSearchResponses);
+): Promise<AeronaveSearchItem[]> {
+  const data = await searchMatriculas(query, type);
+  const searchResults = mapMatriculas(data);
   return searchResults;
 }
 
