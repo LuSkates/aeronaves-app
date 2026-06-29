@@ -1,21 +1,16 @@
 import {
   mockAeronaveResponse,
-  mockAeronaveSearchResponses,
   mockAeronaveTypeResponses,
 } from "@/mocks/apiResponse";
 
-import {
-  AeronaveResponse,
-  AeronaveSearchResponse,
-  AeronaveTypeResponse,
-} from "../dto/aeronaves";
+import { AeronaveResponse, AeronaveTypeResponse } from "../dto/aeronaves";
 
+import { searchMatriculas } from "@/api/api";
 import {
   Aeronave,
   AeronaveSearchItem,
   AeronaveType,
 } from "../models/aeronaves";
-import { searchMatriculas } from "@/api/api";
 
 function mapAeronave(response: AeronaveResponse): Aeronave {
   return {
@@ -28,10 +23,13 @@ function mapAeronave(response: AeronaveResponse): Aeronave {
   };
 }
 
-function mapMatriculas(response: AeronaveSearchResponse): AeronaveSearchItem[] {
-  const out = response.map((item) => ({
-    matricula: item,
-  }));
+function mapMatriculas(response: any): AeronaveSearchItem[] {
+  const out = response.map(
+    (item: { matricula: string; fabricante: string }) => ({
+      matricula: item.matricula,
+      fabricante: item.fabricante,
+    }),
+  );
   return out;
 }
 

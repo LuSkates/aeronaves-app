@@ -1,5 +1,6 @@
 export interface AeronaveSearchItem {
   matricula: string;
+  fabricante: string;
 }
 
 export interface Aeronave {

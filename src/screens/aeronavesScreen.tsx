@@ -146,7 +146,7 @@ export default function AeronavesScreen() {
                     onPress={() => setSelectedType(item.label)}
                     style={[
                       styles.filterChip,
-                      selectedType === item.id && styles.filterChipSelected,
+                      selectedType === item.label && styles.filterChipSelected,
                     ]}
                   >
                     <Text>{item.label}</Text>
@@ -198,6 +198,7 @@ export default function AeronavesScreen() {
           onPress={() => handleAeronavePress(item.matricula)}
         >
           <Text style={styles.code}>{item.matricula}</Text>
+          <Text style={styles.subtitle}>{item.fabricante}</Text>
         </Pressable>
       )}
     />
@@ -262,11 +263,18 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderBottomWidth: 1,
     borderBottomColor: "#EEE",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 
   code: {
     fontWeight: "700",
     fontSize: 16,
+  },
+  subtitle: {
+    fontWeight: "400",
+    color: "gray",
+    fontSize: 14,
   },
 
   name: {

@@ -1,6 +1,6 @@
 import { Aeronave, AeronaveType } from "@/models/aeronaves";
 
-const BASE_URL = "https://localhost:3333/api";
+const BASE_URL = "http://localhost:8001";
 
 export async function getAeronaveTypes(): Promise<AeronaveType[]> {
   const response = await fetch(`${BASE_URL}/aeronave-types`);
@@ -15,7 +15,7 @@ export async function getAeronaveTypes(): Promise<AeronaveType[]> {
 export async function searchMatriculas(
   query: string,
   type?: string,
-): Promise<string[]> {
+): Promise<any> {
   const params = new URLSearchParams();
 
   if (type) {
@@ -23,14 +23,16 @@ export async function searchMatriculas(
   }
 
   params.append("search", query);
-  console.log(`${BASE_URL}/matriculas?${params.toString()}`);
-  const response = await fetch(`${BASE_URL}/matriculas?${params.toString()}`);
+  try {
+    const response = await fetch(`${BASE_URL}/matriculas?${params.toString()}`);
 
-  if (!response.ok) {
-    throw new Error("Failed to search Matriculas");
+    const data = await response.json();
+
+    return data.results;
+  } catch (e) {
+    console.log(e);
+    return [];
   }
-
-  return response.json();
 }
 
 export async function getAeronaveDetails(code: string): Promise<Aeronave> {
