@@ -1,15 +1,17 @@
-import { Aeronave, AeronaveType } from "@/models/aeronaves";
+import { Aeronave } from "@/models/aeronaves";
 
 const BASE_URL = "http://localhost:8001";
 
-export async function getAeronaveTypes(): Promise<AeronaveType[]> {
+export async function getAeronaveTypes(): Promise<any> {
   const response = await fetch(`${BASE_URL}/aeronave-types`);
 
   if (!response.ok) {
     throw new Error("Failed to load Aeronave types");
   }
 
-  return response.json();
+  const data = await response.json();
+
+  return data.results;
 }
 
 export async function searchMatriculas(
@@ -42,5 +44,7 @@ export async function getAeronaveDetails(code: string): Promise<Aeronave> {
     throw new Error("Failed to load Aeronave details");
   }
 
-  return response.json();
+  const data = await response.json();
+
+  return data.results;
 }

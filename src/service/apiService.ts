@@ -1,9 +1,4 @@
-import {
-  mockAeronaveResponse,
-  mockAeronaveTypeResponses,
-} from "@/mocks/apiResponse";
-
-import { AeronaveResponse, AeronaveTypeResponse } from "../dto/aeronaves";
+import { AeronaveResponse } from "../dto/aeronaves";
 
 import { searchMatriculas } from "@/api/api";
 import {
@@ -33,17 +28,21 @@ function mapMatriculas(response: any): AeronaveSearchItem[] {
   return out;
 }
 
-function mapAeronaveType(response: AeronaveTypeResponse): AeronaveType {
-  return {
-    id: response.id,
-    value: response.valor.trim(),
-    label: response.descricao.trim(),
-  };
+function mapAeronaveType(response: any): AeronaveType[] {
+  const out = response.map(
+    (item: { id: string; value: string; label: string }) => ({
+      id: item.id,
+      value: item.value.trim(),
+      label: item.label.trim(),
+    }),
+  );
+  return out;
 }
 
 export function getAeronaveTypes(): AeronaveType[] {
-  const types = mockAeronaveTypeResponses.map(mapAeronaveType);
-  return types;
+  const rawTypes = getAeronaveTypes();
+
+  return mapAeronaveType(rawTypes);
 }
 
 export async function searchAeronavesMatriculas(
@@ -56,6 +55,6 @@ export async function searchAeronavesMatriculas(
 }
 
 export function getAeronaveDetails(code: string): Aeronave {
-  const aeronave = mapAeronave(mockAeronaveResponse);
-  return aeronave;
+  const aeronave = getAeronaveDetails(code);
+  return mapAeronave(aeronave);
 }
